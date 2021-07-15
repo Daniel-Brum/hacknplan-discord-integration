@@ -6,7 +6,7 @@ header("Content-type: application/json; charset=utf-8");
 
 $headers = getallheaders();
 
-$event_type = $headers["X-Hacknplan-Event"];
+$event_type = $headers["X-HacknPlan-Event"];
 
 $json = file_get_contents('php://input');
 
