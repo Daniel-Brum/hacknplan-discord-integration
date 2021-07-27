@@ -1,5 +1,6 @@
 <?php
 
+
 include 'secrets.php';
 
 header("Content-type: application/json; charset=utf-8");
@@ -12,16 +13,171 @@ $json = file_get_contents('php://input');
 
 $data = json_decode($json);
 
+$hnp_curl = curl_init();
+curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 switch($event_type) {
-	case "board.created":
-		$hnp_curl = curl_init();
+	case "project.updated":
+		$message = "Updated project ".$data->Name;
 
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
+		break;
+	case "project.closed":
+		$message = "Closed project ".$data->Name;
+
+		break;
+	case "project.reopened":
+		$message = "Reopened project ".$data->Name;
+
+		break;
+	case "category.created":
+		$message = "Category created ".$data->Name;
+
+		break;
+	case "category.updated":
+		$message = "Category updated ".$data->Name;
+
+		break;
+	case "category.deleted":
+		$message = "Category updated ".$data->Name;
+
+		break;
+	case "designelementtype.created":
+		$message = "Design Element Type Created ".$data->Name;
+
+		break;
+	case "designelementtype.updated":
+		$message = "Design Element Type Updated ".$data->Name;
+
+		break;
+	case "designelementtype.deleted":
+		$message = "Design Element Type Deleted ".$data->Name;
+
+		break;
+	case "importancelevel.created":
+		$message = "Project Importance Level Created ".$data->Name;
+
+		break;
+	case "importancelevel.updated":
+		$message = "Project Importance Level Updated ".$data->Name;
+
+		break;
+	case "importancelevel.deleted":
+		$message = "Project Importance Level Deleted ".$data->Name;
+
+		break;
+	case "role.created":
+		$message = "Project Roles Created ".$data->Name;
+
+		break;
+	case "role.updated":
+		$message = "Project Roles Updated ".$data->Name;
+
+		break;
+	case "role.deleted":
+		$message = "Project Roles Deleted ".$data->Name;
+
+		break;
+	case "stage.created":
+		$message = "Project Stage Created ".$data->Name;
+
+		break;
+	case "stage.updated":
+		$message = "Project Stage Updated ".$data->Name;
+
+		break;
+	case "stage.deleted":
+		$message = "Project Stage Deleted ".$data->Name;
+
+		break;
+	case "tag.created":
+		$message = "Project Tag Created ".$data->Name;
+
+		break;
+	case "tag.updated":
+		$message = "Project Tag Updated ".$data->Name;
+
+		break;
+	case "tag.deleted":
+		$message = "Project Tag Deleted ".$data->Name;
+
+		break;
+	case "projectuser.added":
+		$message = "Project User Added ".$data->User->Name." (".$data->User->Username.")";
+
+		break;
+	case "projectuser.updated":
+		$message = "Project User Updated ".$data->User->Name." (".$data->User->Username.")";
+
+		break;
+	case "projectuser.deleted":
+		$message = "Project User Deleted ".$data->User->Name." (".$data->User->Username.")";
+
+		break;
+	case "projectuser.left":
+		$message = "Project User Left ".$data->User->Name." (".$data->User->Username.")";
+
+		break;
+	case "milestone.created":
+		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/milsestones/'.$data->Creator->Id);
+		$user_name = json_decode(curl_exec($hnp_curl))->user->name;
+
+		curl_close($hnp_curl);
+
+		$message = $user_name." created a new milestone: ".$data->Name;
+
+		break;
+	case "milestone.updated":
+		$message = "Milestone Updated ".$data->Name;
+
+		break;
+	case "milestone.deleted":
+		$message = "Milestone Deleted ".$data->Name;
+
+		break;
+	case "milestone.closed":
+		$message = "Milestone Closed ".$data->Name;
+
+		break;
+	case "milestone.reopened":
+		$message = "Milestone Reopened ".$data->Name;
+
+		break;
+	case "designelement.created":
+		$message = "Design Element Created ".$data->Name;
+
+		break;
+	case "designelement.updated":
+		$message = "Design Element Updated ".$data->Name;
+
+		break;
+	case "designelement.deleted":
+		$message = "Design Element Deleted ".$data->Name;
+
+		break;
+	case "designelement.comment.created":
+		$message = "Design Element Comment Created ".$data->Name;
+
+		break;
+	case "designelement.comment.updated":
+		$message = "Design Element Comment Updated ".$data->Name;
+
+		break;
+	case "designelement.comment.deleted":
+		$message = "Design Element Comment Deleted ".$data->Name;
+
+		break;
+	case "designelement.attachment.added":
+		$message = "Design Element Attachment Added ".$data->Name;
+
+		break;
+	case "designelement.attachment.removed":
+		$message = "Design Element Attachment Removed ".$data->Name;
+
+		break;
+	case "board.created":	
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.$data->Creator->Id);
-
 		$user_name = json_decode(curl_exec($hnp_curl))->user->name;
 
 		curl_close($hnp_curl);
@@ -51,11 +207,7 @@ switch($event_type) {
 		break;
 
 	case "workitem.created":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
-
+			
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.$data->User->Id);
 
 		$user_name = json_decode(curl_exec($hnp_curl))->user->name;
@@ -87,11 +239,7 @@ switch($event_type) {
 		break;
 
 	case "workitem.user.assigned":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
-
+		
 		$users = $data->AssignedUsers;
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.end($users)->User->Id);
@@ -109,11 +257,7 @@ switch($event_type) {
 		break;
 
 	case "workitem.user.unassigned":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
-
+	
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
 		$work_item_name = json_decode(curl_exec($hnp_curl))->title;
@@ -125,10 +269,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.comment.created":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.$data->User->Id);
 
@@ -145,10 +285,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.comment.updated":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.$data->User->Id);
 
@@ -165,10 +301,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.comment.deleted":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -181,10 +313,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.subtask.created":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -197,10 +325,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.subtask.updated":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -212,11 +336,7 @@ switch($event_type) {
 
 		break;
 
-	case "workitem.subtask.deleted":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
+	case "workitem.subtask.deleted":		
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -228,11 +348,7 @@ switch($event_type) {
 
 		break;
 
-	case "workitem.subtask.closed":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
+	case "workitem.subtask.closed":		
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -245,10 +361,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.subtask.reopened":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -261,10 +373,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.worklog.created":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.$data->User->Id);
 
@@ -281,10 +389,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.worklog.updated":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -297,10 +401,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.worklog.deleted":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
@@ -323,10 +423,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.attachment.added":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/users/'.$data->User->Id);
 
@@ -343,10 +439,6 @@ switch($event_type) {
 		break;
 
 	case "workitem.attachment.removed":
-		$hnp_curl = curl_init();
-
-		curl_setopt($hnp_curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($hnp_curl, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Authorization: ApiKey '.$hnp_api_key));
 
 		curl_setopt($hnp_curl, CURLOPT_URL, 'https://api.hacknplan.com/v0/projects/'.$data->ProjectId.'/workitems/'.$data->WorkItemId);
 
