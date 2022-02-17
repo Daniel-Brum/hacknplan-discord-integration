@@ -1,13 +1,33 @@
 <?php
-
-
 include 'secrets.php';
 
 header("Content-type: application/json; charset=utf-8");
 
+if (!function_exists('getallheaders'))
+{
+  function getallheaders()
+  {
+    $headers = [];
+     foreach ($_SERVER as $name => $value)
+      {
+        if (substr($name, 0, 5) == 'HTTP_')
+        {
+          $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+        }
+      }    
+    return $headers;
+  }
+}
+
 $headers = getallheaders();
 
-$event_type = $headers["X-HacknPlan-Event"];
+$event_type = $headers['X-Hacknplan-Event'];
+
+if($event_type == NULL)
+{
+  echo "Event not defined";
+  die;
+}
 
 $json = file_get_contents('php://input');
 
@@ -451,6 +471,7 @@ switch($event_type) {
 		break;
 
 	default:
+  echo "$event_type";
 		$message = "The event ".$event_type." is not supported. Please disable it in your HackNPlan webhook.";
 
 		break;
