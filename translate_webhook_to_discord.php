@@ -5,18 +5,18 @@ header("Content-type: application/json; charset=utf-8");
 
 if (!function_exists('getallheaders'))
 {
-  function getallheaders()
-  {
-    $headers = [];
-     foreach ($_SERVER as $name => $value)
-      {
-        if (substr($name, 0, 5) == 'HTTP_')
-        {
-          $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-        }
-      }    
-    return $headers;
-  }
+	function getallheaders()
+	{
+		$headers = [];
+		foreach ($_SERVER as $name => $value)
+		{
+			if (substr($name, 0, 5) == 'HTTP_')
+			{
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+			}
+		}    
+		return $headers;
+	}
 }
 
 $headers = getallheaders();
@@ -25,8 +25,8 @@ $event_type = $headers['X-Hacknplan-Event'];
 
 if($event_type == NULL)
 {
-  echo "Event not defined";
-  die;
+	echo "Event not defined";
+	die;
 }
 
 $json = file_get_contents('php://input');
@@ -486,15 +486,15 @@ if(!isset($message[0])) {
 	$message .= PHP_EOL;
 }
 
-	$curl = curl_init();
+$curl = curl_init();
 
-	curl_setopt($curl, CURLOPT_URL, $discord_webhook_link);
-	curl_setopt($curl, CURLOPT_POST, 1);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-	curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([
-		'content' => $message
-	]));
+curl_setopt($curl, CURLOPT_URL, $discord_webhook_link);
+curl_setopt($curl, CURLOPT_POST, 1);
+curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([
+	'content' => $message
+]));
 
-	$output = json_decode(curl_exec($curl), true);
+$output = json_decode(curl_exec($curl), true);
 
-	curl_close($curl);
+curl_close($curl);
