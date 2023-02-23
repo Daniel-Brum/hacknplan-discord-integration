@@ -21,7 +21,13 @@ if (!function_exists('getallheaders'))
 
 $headers = getallheaders();
 
-$event_type = $headers['X-Hacknplan-Event'];
+foreach ($headers as $name => $value)
+{
+	if(strtolower($name) == 'x-hacknplan-event')
+	{
+		$event_type = $headers[$name];
+	}
+}
 
 if($event_type == NULL)
 {
